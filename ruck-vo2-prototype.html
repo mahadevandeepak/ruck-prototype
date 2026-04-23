@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ruck VO2 Prototype</title>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+  <style>
+    :root,[data-theme="light"]{--color-bg:#f7f6f2;--color-surface:#f9f8f5;--color-surface-2:#fbfbf9;--color-surface-offset:#f3f0ec;--color-border:#d4d1ca;--color-divider:#dcd9d5;--color-text:#28251d;--color-text-muted:#6c6a65;--color-text-faint:#a9a7a1;--color-text-inverse:#f9f8f4;--color-primary:#01696f;--color-primary-hover:#0c4e54;--color-success:#437a22;--color-warning:#964219;--color-error:#a12c7b;--shadow-sm:0 1px 2px rgba(30,28,24,.08);--shadow-md:0 8px 24px rgba(30,28,24,.10);--radius-lg:1rem;--radius-full:999px;--space-6:1.5rem;--text-xs:.78rem;--text-sm:.95rem;--text-base:1rem;--text-lg:1.2rem;--text-xl:1.7rem;--font-body:'General Sans',system-ui,sans-serif}
+    [data-theme="dark"]{--color-bg:#171614;--color-surface:#1c1b19;--color-surface-2:#201f1d;--color-surface-offset:#1d1c1a;--color-border:#393836;--color-divider:#262523;--color-text:#cdccca;--color-text-muted:#989793;--color-text-faint:#646361;--color-text-inverse:#2b2a28;--color-primary:#4f98a3;--color-primary-hover:#227f8b;--color-success:#6daa45;--color-warning:#e8af34;--color-error:#d163a7;--shadow-sm:0 1px 2px rgba(0,0,0,.2);--shadow-md:0 10px 30px rgba(0,0,0,.35)}
+    *{box-sizing:border-box} html,body{margin:0;padding:0;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body)} body{line-height:1.5}
+    .wrap{max-width:1100px;margin:0 auto;padding:var(--space-6);padding-bottom:7rem}
+    .topbar{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:1.5rem;position:sticky;top:0;z-index:10;padding:.5rem 0;background:color-mix(in srgb, var(--color-bg) 82%, transparent);backdrop-filter: blur(10px)}
+    .brand{display:flex;align-items:center;gap:.8rem}.logo{width:42px;height:42px;border-radius:14px;background:linear-gradient(145deg,var(--color-primary),color-mix(in srgb, var(--color-primary) 60%, white));display:grid;place-items:center;color:white;box-shadow:var(--shadow-md)}
+    h1{font-size:var(--text-xl);margin:0}.sub{color:var(--color-text-muted);max-width:70ch}.theme-btn{min-width:44px;min-height:44px;border:1px solid var(--color-border);background:var(--color-surface);border-radius:var(--radius-full);color:var(--color-text)}
+    .grid{display:grid;grid-template-columns:1.15fr .85fr;gap:1.25rem}.card{background:var(--color-surface);border:1px solid color-mix(in srgb, var(--color-text) 12%, transparent);border-radius:var(--radius-lg);padding:1.1rem;box-shadow:var(--shadow-sm)}
+    .section-title{font-size:var(--text-lg);margin:.25rem 0 1rem 0}.muted{color:var(--color-text-muted)}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.9rem}.full{grid-column:1/-1}
+    label{display:block;font-size:var(--text-sm);font-weight:600;margin:0 0 .35rem 0} input,select{width:100%;min-height:48px;border-radius:.8rem;border:1px solid var(--color-border);padding:.78rem .9rem;background:var(--color-surface-2);color:var(--color-text)} input:focus,select:focus{outline:2px solid color-mix(in srgb, var(--color-primary) 55%, white);outline-offset:2px}
+    .note{background:var(--color-surface-offset);border-radius:.9rem;padding:.9rem 1rem;color:var(--color-text-muted);font-size:var(--text-sm)}
+    .actions{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:1rem}.btn{min-height:48px;padding:.9rem 1rem;border-radius:.9rem;border:1px solid transparent;font-weight:600}.btn-primary{background:var(--color-primary);color:var(--color-text-inverse)}.btn-primary:hover{background:var(--color-primary-hover)}.btn-secondary{background:var(--color-surface-2);border-color:var(--color-border);color:var(--color-text)}
+    .result-hero{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.9rem;margin-top:1rem}.metric{padding:1rem;border-radius:1rem;background:var(--color-surface-2);border:1px solid color-mix(in srgb, var(--color-text) 10%, transparent)} .metric .k{font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.08em;color:var(--color-text-muted)} .metric .v{font-size:1.9rem;font-weight:700;margin-top:.3rem}
+    .risk-badge{display:inline-flex;align-items:center;gap:.4rem;padding:.45rem .72rem;border-radius:999px;font-size:var(--text-sm);font-weight:700}.low{background:color-mix(in srgb,var(--color-success) 15%, transparent);color:var(--color-success)}.mod{background:color-mix(in srgb,var(--color-warning) 18%, transparent);color:var(--color-warning)}.high{background:color-mix(in srgb,var(--color-error) 15%, transparent);color:var(--color-error)}
+    .formula{white-space:pre-wrap;background:var(--color-surface-offset);border-radius:1rem;padding:1rem;font-size:var(--text-sm);color:var(--color-text-muted);margin-top:1rem}.small{font-size:var(--text-sm)} table{width:100%;border-collapse:collapse}
+    @media (max-width: 860px){.grid,.result-hero,.form-grid{grid-template-columns:1fr}.wrap{padding:1rem;padding-bottom:8rem}.topbar{align-items:flex-start}.brand{align-items:flex-start}.card{padding:1rem}.metric .v{font-size:1.55rem}.actions{position:fixed;left:0;right:0;bottom:0;padding:.85rem 1rem calc(.85rem + env(safe-area-inset-bottom));background:color-mix(in srgb, var(--color-bg) 88%, transparent);backdrop-filter:blur(12px);border-top:1px solid var(--color-border);margin-top:0}.actions .btn{flex:1}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 19h14"/><path d="M8 19l2-10h4l2 10"/><path d="M10.5 9 12 5l1.5 4"/></svg></div>
+        <div><h1>Ruck VO2 + AMS Prototype</h1><div class="sub">Field-test ruck demand, pace, optional AMS risk, and save hikes for trend comparison.</div></div>
+      </div>
+      <button class="theme-btn" data-theme-toggle aria-label="Toggle theme">◐</button>
+    </div>
+
+    <div class="grid">
+      <section class="card">
+        <h2 class="section-title">Inputs</h2>
+        <div class="form-grid">
+          <div><label for="unitSystem">Units</label><select id="unitSystem"><option value="imperial" selected>British / Imperial</option><option value="metric">Metric</option></select></div>
+          <div><label for="bodyWeight" id="bodyWeightLabel">Body weight (lb)</label><input id="bodyWeight" type="number" value="175" /></div>
+          <div><label for="packWeight" id="packWeightLabel">Pack weight (lb)</label><input id="packWeight" type="number" value="30" /></div>
+          <div><label for="distance" id="distanceLabel">Distance (mi)</label><input id="distance" type="number" step="0.1" value="5.0" /></div>
+          <div><label for="time">Elapsed time (min)</label><input id="time" type="number" value="100" /></div>
+          <div><label for="elevation" id="elevationLabel">Elevation gain (ft)</label><input id="elevation" type="number" value="900" /></div>
+          <div><label for="avgHR">Average HR</label><input id="avgHR" type="number" value="136" /></div>
+          <div><label for="restHR">Resting HR</label><input id="restHR" type="number" value="58" /></div>
+          <div><label for="maxHR">Max HR</label><input id="maxHR" type="number" value="176" /></div>
+          <div><label for="baselineVo2">Baseline unloaded VO2 max</label><input id="baselineVo2" type="number" step="0.1" value="40.0" /></div>
+          <div><label for="terrain">Terrain factor</label><select id="terrain"><option value="1.0">Road / smooth trail</option><option value="1.1" selected>Typical trail</option><option value="1.2">Rocky / technical trail</option><option value="1.3">Sand / very inefficient terrain</option></select></div>
+        </div>
+
+        <div id="amsBlockWrapper">
+          <h2 class="section-title" style="margin-top:1.5rem">AMS inputs</h2>
+          <div class="form-grid">
+            <div><label for="amsToggle">Altitude / AMS mode</label><select id="amsToggle"><option value="auto" selected>Auto</option><option value="on">On</option><option value="off">Off</option></select></div>
+            <div><label for="sleepAlt" id="sleepAltLabel">Tonight sleeping altitude (m)</label><input id="sleepAlt" type="number" value="2800" /></div>
+            <div><label for="priorSleepAlt" id="priorSleepAltLabel">Last night sleeping altitude (m)</label><input id="priorSleepAlt" type="number" value="1500" /></div>
+            <div><label for="hoursAtAlt">Hours at altitude before sleep</label><input id="hoursAtAlt" type="number" step="0.5" value="8" /></div>
+            <div><label for="aae">AAE, prior 3–7 day exposure (km·days)</label><input id="aae" type="number" step="0.1" value="0.0" /></div>
+            <div><label for="amsHistory">Prior AMS history</label><select id="amsHistory"><option value="0" selected>No</option><option value="1">Yes</option></select></div>
+            <div class="full"><label for="sleepNight">Is this the first night at this altitude band?</label><select id="sleepNight"><option value="1" selected>Yes, first night</option><option value="0">No, not the first night</option></select></div>
+          </div>
+          <div id="amsStatus" class="note small" style="margin-top:1rem">AMS status note</div>
+          <div class="note small" style="margin-top:.8rem">AMS is most relevant for sleep altitude around 2,500 m and above. In auto mode, the prototype suppresses AMS calculations below 2,000 m, keeps them optional in the 2,000–2,500 m transition zone, and shows them above that range.</div>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-primary" id="calculateBtn">Calculate</button>
+          <button class="btn btn-secondary" id="saveBtn">Save entry</button>
+          <button class="btn btn-secondary" id="sampleBtn">Load sample</button>
+        </div>
+      </section>
+
+      <aside class="card">
+        <h2 class="section-title">Results</h2>
+        <div class="result-hero">
+          <div class="metric"><div class="k">Adjusted VO2 demand</div><div class="v" id="vo2DemandOut">—</div><div class="muted small">ml/kg/min equivalent</div></div>
+          <div class="metric"><div class="k">Pace</div><div class="v" id="paceOut">—</div><div class="muted small" id="paceSubOut">min/mi</div></div>
+          <div class="metric"><div class="k">Unloaded equivalent VO2</div><div class="v" id="vo2EqOut">—</div><div class="muted small">comparable no-pack effort</div></div>
+          <div class="metric"><div class="k">Ruck efficiency score</div><div class="v" id="effOut">—</div><div class="muted small">higher is better</div></div>
+          <div class="metric"><div class="k">AMS Risk Score v1</div><div class="v" id="amsScoreOut">—</div><div class="muted small" id="amsBandOut">—</div></div>
+        </div>
+        <div class="note" style="margin-top:1rem"><strong>AMS note:</strong> This is a planning score, not a diagnosis. If severe symptoms appear at altitude, descend and seek medical help.</div>
+        <div class="formula" id="explainOut">Enter your hike stats and tap Calculate.</div>
+        <div class="formula" id="amsExplainOut">AMS explanation will appear here when active.</div>
+      </aside>
+    </div>
+
+    <section class="card" style="margin-top:1.25rem">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
+        <div>
+          <h2 class="section-title" style="margin-bottom:.35rem">Session history</h2>
+          <div class="muted small">Save hikes in this browser to compare pace, demand, efficiency, and AMS context over time.</div>
+        </div>
+        <button class="btn btn-secondary" id="clearHistoryBtn" style="min-width:140px">Clear history</button>
+      </div>
+      <div class="result-hero" style="margin-top:1rem">
+        <div class="metric"><div class="k">Saved hikes</div><div class="v" id="historyCountOut">0</div><div class="muted small">entries in this browser</div></div>
+        <div class="metric"><div class="k">Avg pace</div><div class="v" id="historyAvgPaceOut">—</div><div class="muted small" id="historyAvgPaceSubOut">min/mi</div></div>
+        <div class="metric"><div class="k">Avg demand</div><div class="v" id="historyAvgDemandOut">—</div><div class="muted small">ruck-adjusted VO2</div></div>
+        <div class="metric"><div class="k">Trend</div><div class="v" id="historyTrendOut">—</div><div class="muted small">latest vs first efficiency</div></div>
+      </div>
+      <div class="formula" id="historyExplainOut">No saved hikes yet. Save a few entries to build a trend view.</div>
+      <div style="overflow:auto;margin-top:1rem">
+        <table>
+          <thead>
+            <tr style="text-align:left;border-bottom:1px solid var(--color-divider)">
+              <th style="padding:.6rem">#</th>
+              <th style="padding:.6rem">Date</th>
+              <th style="padding:.6rem">Units</th>
+              <th style="padding:.6rem">Dist</th>
+              <th style="padding:.6rem">Pace</th>
+              <th style="padding:.6rem">Pack</th>
+              <th style="padding:.6rem">Demand</th>
+              <th style="padding:.6rem">Efficiency</th>
+              <th style="padding:.6rem">AMS</th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody">
+            <tr><td colspan="9" style="padding:.8rem;color:var(--color-text-muted)">No entries saved yet.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+<script>
+const $ = id => document.getElementById(id);
+let lastComputed = null;
+function safeStorageGet(){ try { const raw = localStorage.getItem('ruckHistoryV1'); return raw ? JSON.parse(raw) : []; } catch(e){ return []; } }
+function safeStorageSet(data){ try { localStorage.setItem('ruckHistoryV1', JSON.stringify(data)); } catch(e){} }
+(function(){ const root=document.documentElement, btn=document.querySelector('[data-theme-toggle]'); let theme=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'; root.setAttribute('data-theme',theme); btn.addEventListener('click',()=>{theme=theme==='dark'?'light':'dark'; root.setAttribute('data-theme',theme);}); })();
+function clamp(v,min,max){return Math.max(min,Math.min(max,v));}
+function kgToLb(kg){return kg/0.45359237;} function kmToMi(km){return km/1.60934;} function mToFt(m){return m/0.3048;} function ftToM(ft){return ft*0.3048;}
+function miToM(mi){return mi*1609.34;} function mph(distanceMi,timeMin){return timeMin>0?distanceMi/(timeMin/60):0;} function grade(elevFt,distanceMi){const d=miToM(distanceMi); if(d<=0) return 0; return ftToM(elevFt)/d;}
+function hrReserve(avg,rest,max){const den=(max-rest); if(den<=0) return 0; return clamp((avg-rest)/den,0,1.25);} function aaeText(v){return `${v.toFixed(1)} km·days`;}
+function formatPace(totalMinutes, distance, unit){ if(!(totalMinutes>0) || !(distance>0)) return {main:'—', sub: unit==='metric'?'min/km':'min/mi'}; const pace=totalMinutes/distance; const mins=Math.floor(pace); const secs=Math.round((pace-mins)*60); const mm=secs===60?mins+1:mins; const ss=secs===60?0:secs; return {main:`${mm}:${String(ss).padStart(2,'0')}`, sub: unit==='metric'?'min/km':'min/mi'}; }
+function paceNumber(totalMinutes,distance){ return (totalMinutes>0 && distance>0) ? totalMinutes/distance : null; }
+function resolveAMSMode(sleepAlt,toggle){ if(toggle==='off') return 'off'; if(toggle==='on') return 'on'; if(sleepAlt<2000) return 'off'; return 'on'; }
+function convertDisplayedValues(nextUnit){ const current=document.documentElement.dataset.units || 'imperial'; if(current===nextUnit) return; const convert=(id,fn,digits=1)=>{ const el=$(id); const v=parseFloat(el.value); if(Number.isFinite(v)) el.value=(Math.round(fn(v)*Math.pow(10,digits))/Math.pow(10,digits)).toFixed(digits).replace(/\.0$/,''); }; if(nextUnit==='metric'){ convert('bodyWeight',v=>v*0.45359237,1); convert('packWeight',v=>v*0.45359237,1); convert('distance',v=>v*1.60934,1); convert('elevation',ftToM,0); convert('sleepAlt',ftToM,0); convert('priorSleepAlt',ftToM,0);} else { convert('bodyWeight',kgToLb,1); convert('packWeight',kgToLb,1); convert('distance',kmToMi,1); convert('elevation',mToFt,0); convert('sleepAlt',mToFt,0); convert('priorSleepAlt',mToFt,0);} }
+function updateUnitLabels(){ const unit=$('unitSystem').value; document.documentElement.dataset.units=unit; $('bodyWeightLabel').textContent=`Body weight (${unit==='metric'?'kg':'lb'})`; $('packWeightLabel').textContent=`Pack weight (${unit==='metric'?'kg':'lb'})`; $('distanceLabel').textContent=`Distance (${unit==='metric'?'km':'mi'})`; $('elevationLabel').textContent=`Elevation gain (${unit==='metric'?'m':'ft'})`; $('sleepAltLabel').textContent=`Tonight sleeping altitude (${unit==='metric'?'m':'ft'})`; $('priorSleepAltLabel').textContent=`Last night sleeping altitude (${unit==='metric'?'m':'ft'})`; $('historyAvgPaceSubOut').textContent=unit==='metric'?'min/km':'min/mi'; }
+function getCanonicalInputs(){ const unit=$('unitSystem').value; const bodyRaw=parseFloat($('bodyWeight').value)||0; const packRaw=parseFloat($('packWeight').value)||0; const distRaw=parseFloat($('distance').value)||0; const elevRaw=parseFloat($('elevation').value)||0; const sleepAltRaw=parseFloat($('sleepAlt').value)||0; const priorSleepAltRaw=parseFloat($('priorSleepAlt').value)||0; return { unit, bodyWeightLb: unit==='metric'?kgToLb(bodyRaw):bodyRaw, packWeightLb: unit==='metric'?kgToLb(packRaw):packRaw, distanceMi: unit==='metric'?kmToMi(distRaw):distRaw, elevationFt: unit==='metric'?mToFt(elevRaw):elevRaw, sleepAltM: unit==='metric'?sleepAltRaw:ftToM(sleepAltRaw), priorSleepAltM: unit==='metric'?priorSleepAltRaw:ftToM(priorSleepAltRaw)}; }
+function renderHistory(){ const history=safeStorageGet(); const currentUnit=$('unitSystem').value; $('historyCountOut').textContent=String(history.length); if(!history.length){ $('historyAvgPaceOut').textContent='—'; $('historyAvgDemandOut').textContent='—'; $('historyTrendOut').textContent='—'; $('historyExplainOut').textContent='No saved hikes yet. Save a few entries to build a trend view.'; $('historyTableBody').innerHTML='<tr><td colspan="9" style="padding:.8rem;color:var(--color-text-muted)">No entries saved yet.</td></tr>'; return; } const paceList=history.map(h=>currentUnit==='metric'?h.paceMinPerKm:h.paceMinPerMi).filter(v=>Number.isFinite(v)); const avgPace=paceList.reduce((a,b)=>a+b,0)/paceList.length; const avgDemand=history.reduce((a,b)=>a+b.adjustedVo2Demand,0)/history.length; const firstEff=history[0].efficiency; const lastEff=history[history.length-1].efficiency; const delta=(Number.isFinite(firstEff)&&Number.isFinite(lastEff))?(lastEff-firstEff):null; const paceFmt=formatPace(avgPace,1,currentUnit); $('historyAvgPaceOut').textContent=paceFmt.main; $('historyAvgDemandOut').textContent=avgDemand.toFixed(1); $('historyTrendOut').textContent=delta===null?'—':`${delta>=0?'+':''}${delta.toFixed(0)}`; $('historyExplainOut').textContent=delta===null?`Saved ${history.length} hikes. Use the table below to compare pace, pack, demand, and efficiency.`:`Saved ${history.length} hikes. Efficiency trend from first to latest entry: ${delta>=0?'improving':'down'} ${Math.abs(delta).toFixed(0)} points.`; $('historyTableBody').innerHTML = history.slice().reverse().map((h,idx)=>{ const pace=currentUnit==='metric'?formatPace(h.paceMinPerKm,1,'metric'):formatPace(h.paceMinPerMi,1,'imperial'); const dist=currentUnit==='metric'?`${h.distanceKm.toFixed(1)} km`:`${h.distanceMi.toFixed(1)} mi`; const pack=currentUnit==='metric'?`${h.packKg.toFixed(1)} kg`:`${h.packLb.toFixed(1)} lb`; const ams=h.amsMode==='off'?'Off':`${h.amsScore} (${h.amsBand})`; return `<tr style="border-top:1px solid var(--color-divider)"><td style="padding:.7rem">${history.length-idx}</td><td style="padding:.7rem">${h.savedAt}</td><td style="padding:.7rem">${h.unit}</td><td style="padding:.7rem">${dist}</td><td style="padding:.7rem">${pace.main} <span style="color:var(--color-text-muted)">${pace.sub}</span></td><td style="padding:.7rem">${pack}</td><td style="padding:.7rem">${h.adjustedVo2Demand.toFixed(1)}</td><td style="padding:.7rem">${h.efficiency.toFixed(0)}</td><td style="padding:.7rem">${ams}</td></tr>`; }).join(''); }
+function saveCurrentEntry(){ if(!lastComputed) return; const history=safeStorageGet(); history.push(lastComputed); safeStorageSet(history); renderHistory(); }
+function clearHistory(){ safeStorageSet([]); renderHistory(); }
+function calc(){ const canonical=getCanonicalInputs(); const bodyWeight=canonical.bodyWeightLb, packWeight=canonical.packWeightLb, distance=canonical.distanceMi, time=parseFloat($('time').value)||0, elevation=canonical.elevationFt, avgHR=parseFloat($('avgHR').value)||0, restHR=parseFloat($('restHR').value)||0, maxHR=parseFloat($('maxHR').value)||0, baselineVo2=parseFloat($('baselineVo2').value)||0, terrain=parseFloat($('terrain').value)||1.0; const amsToggle=$('amsToggle').value, sleepAlt=canonical.sleepAltM, priorSleepAlt=canonical.priorSleepAltM, hoursAtAlt=parseFloat($('hoursAtAlt').value)||0, aae=parseFloat($('aae').value)||0, amsHistory=parseFloat($('amsHistory').value)||0, sleepNight=parseFloat($('sleepNight').value)||0, amsMode=resolveAMSMode(sleepAlt,amsToggle);
+  const speedMph=mph(distance,time), displayedDistance=parseFloat($('distance').value)||0, paceFmt=formatPace(time,displayedDistance,canonical.unit), speedMMin=(distance*26.8224)/(time/60||1), g=grade(elevation,distance), flatVo2=3.5+0.1*speedMMin+1.8*speedMMin*g, massRatio=(bodyWeight+packWeight)/Math.max(bodyWeight,1), gradeFactor=1+(g*3.5), loadFactor=Math.max(1,(0.72+0.28*massRatio)*terrain*gradeFactor), hrr=hrReserve(avgHR,restHR,maxHR), hrFactor=0.85+(0.45*hrr), adjustedVo2Demand=flatVo2*loadFactor*hrFactor, unloadedEquivalentVo2=adjustedVo2Demand/Math.max(loadFactor,1), efficiency=baselineVo2>0?clamp((baselineVo2/unloadedEquivalentVo2)*100,40,160):0;
+  let score=0; if(sleepAlt>=2000&&sleepAlt<2500) score+=8; else if(sleepAlt>=2500&&sleepAlt<3000) score+=18; else if(sleepAlt>=3000&&sleepAlt<3500) score+=30; else if(sleepAlt>=3500&&sleepAlt<4000) score+=42; else if(sleepAlt>=4000) score+=55; const sleepGain=Math.max(0,sleepAlt-priorSleepAlt); if(sleepGain>=300&&sleepGain<500) score+=8; else if(sleepGain>=500&&sleepGain<900) score+=18; else if(sleepGain>=900) score+=28; if(hoursAtAlt>=2&&hoursAtAlt<6) score+=4; else if(hoursAtAlt>=6&&hoursAtAlt<12) score+=8; else if(hoursAtAlt>=12) score+=12; if(sleepNight===1) score+=8; if(amsHistory===1) score+=16; let acclimCredit=0; if(aae>=2&&aae<5) acclimCredit=6; else if(aae>=5&&aae<9) acclimCredit=12; else if(aae>=9) acclimCredit=18; score-=acclimCredit; let amsScore=Math.round(clamp(score,0,100)); let band='Low', bandClass='low'; if(amsScore>=50){band='High'; bandClass='high';} else if(amsScore>=25){band='Moderate'; bandClass='mod';} if(amsMode==='off'){amsScore=0; band='Off'; bandClass='low';}
+  const status=$('amsStatus'); if(amsToggle==='off') status.textContent='AMS mode is manually off. This is a good default for sea-level or low-altitude hikes where altitude illness tracking adds noise.'; else if(amsToggle==='auto'&&sleepAlt<2000) status.textContent='AMS mode is auto-hidden because expected sleeping altitude is below 2000 m. The ruck model remains active and AMS is not calculated.'; else if(amsToggle==='auto'&&sleepAlt>=2000&&sleepAlt<2500) status.textContent='AMS mode is shown because you are in the 2000–2500 m transition zone. This is optional, but useful if ascent is rapid or you are altitude-sensitive.'; else status.textContent='AMS mode is active because sleeping altitude is high enough that altitude illness assessment can matter.';
+  $('vo2DemandOut').textContent=adjustedVo2Demand.toFixed(1); $('paceOut').textContent=paceFmt.main; $('paceSubOut').textContent=paceFmt.sub; $('vo2EqOut').textContent=unloadedEquivalentVo2.toFixed(1); $('effOut').textContent=efficiency?efficiency.toFixed(0):'—'; $('amsScoreOut').textContent=amsMode==='off'?'—':amsScore; $('amsBandOut').innerHTML=amsMode==='off'?'<span class="risk-badge low">AMS off</span>':`<span class="risk-badge ${bandClass}">${band} risk</span>`;
+  $('explainOut').textContent=`Ruck model\nSpeed: ${speedMph.toFixed(2)} mph\nAverage grade: ${(g*100).toFixed(1)}%\nFlat walking VO2 estimate: ${flatVo2.toFixed(1)} ml/kg/min\nLoad factor: ${loadFactor.toFixed(2)}\nHR reserve factor: ${hrFactor.toFixed(2)}\nAdjusted VO2 demand: ${adjustedVo2Demand.toFixed(1)}\nUnloaded equivalent VO2: ${unloadedEquivalentVo2.toFixed(1)}\nRuck efficiency score: ${efficiency?efficiency.toFixed(0):'—'}`;
+  $('amsExplainOut').textContent=amsMode==='off'?'Altitude / AMS assessment is not being calculated for this hike. Keep using the ruck model, and turn AMS on when a trip includes meaningful altitude exposure or a higher sleeping altitude.':`AMS Risk Score v1\nSleep altitude: ${sleepAlt.toFixed(0)} m\nSleep altitude gain: ${sleepGain.toFixed(0)} m\nHours at altitude before sleep: ${hoursAtAlt.toFixed(1)} h\nAAE acclimatization credit: ${aaeText(aae)}\nPrior AMS history: ${amsHistory===1?'yes':'no'}\nFirst night: ${sleepNight===1?'yes':'no'}\nFinal score: ${amsScore} (${band})`;
+  lastComputed = { savedAt:new Date().toLocaleDateString(), unit:canonical.unit==='metric'?'Metric':'Imperial', distanceMi:distance, distanceKm:distance*1.60934, packLb:packWeight, packKg:packWeight*0.45359237, paceMinPerMi:paceNumber(time,distance), paceMinPerKm:paceNumber(time,distance*1.60934), adjustedVo2Demand, unloadedEquivalentVo2, efficiency, amsMode, amsScore, amsBand:band };
+}
+$('calculateBtn').addEventListener('click',calc); $('saveBtn').addEventListener('click',()=>{calc(); saveCurrentEntry();}); $('clearHistoryBtn').addEventListener('click',clearHistory); ['amsToggle','sleepAlt'].forEach(id=>$(id).addEventListener('change',calc)); $('unitSystem').addEventListener('change',(e)=>{ convertDisplayedValues(e.target.value); updateUnitLabels(); calc(); renderHistory(); }); $('sampleBtn').addEventListener('click',()=>{ const vals={unitSystem:'imperial',bodyWeight:175,packWeight:35,distance:6.8,time:155,elevation:1900,avgHR:142,restHR:58,maxHR:176,baselineVo2:39.5,terrain:1.2,amsToggle:'on',sleepAlt:11319,priorSleepAlt:8202,hoursAtAlt:10,aae:1.5,amsHistory:1,sleepNight:1}; Object.entries(vals).forEach(([k,v])=>$(k).value=v); updateUnitLabels(); document.documentElement.dataset.units=$('unitSystem').value; calc(); }); updateUnitLabels(); document.documentElement.dataset.units=$('unitSystem').value; renderHistory(); calc();
+</script>
+</body>
+</html>
